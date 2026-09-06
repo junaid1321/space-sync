@@ -14,7 +14,7 @@ class MemberNode:
         booking.set_next(self.borrowed_head)
         self.borrowed_head = booking
 
-    def add_hosted_head(self, booking_node: BookingNode):
+    def add_hosted_booking(self, booking_node: BookingNode):
         booking_node.set_next(self.hosted_head)
         self.hosted_head = booking_node
 
@@ -49,7 +49,7 @@ class MemberNode:
 
     def remove_booking(self, booking_id, list_type):
         lower_list_type = list_type.lower()
-        if lower_list_type == "booking":
+        if lower_list_type == "borrowed":
             prev_node = None
             curr_node = self.borrowed_head
             while curr_node is not None:
@@ -59,10 +59,21 @@ class MemberNode:
                     prev_node = curr_node
                     curr_node = curr_node.get_next()
 
-            prev_node.set_next(curr_node.get_next())
-            curr_node.set_next(None)
-            print("\nBooking Removed.\n")
-            return curr_node
+
+            if curr_node == None:
+                print("\nBooking not found.\n")
+                return None
+            
+            if prev_node == None:
+                self.borrowed_head = curr_node.get_next()
+                curr_node.set_next(None)
+                print("\nBooking Removed.\n")
+                return curr_node
+            else:
+                prev_node.set_next(curr_node.get_next())
+                curr_node.set_next(None)
+                print("\nBooking Removed.\n")
+                return curr_node
 
         elif lower_list_type == "hosted":
             prev_node = None
@@ -74,13 +85,23 @@ class MemberNode:
                     prev_node = curr_node
                     curr_node = curr_node.get_next()
 
-            prev_node.set_next(curr_node.get_next())
-            curr_node.set_next(None)
-            print("\nBooking Removed.\n")
-            return curr_node
+            if curr_node == None:
+                print("\nBooking not found.\n")
+                return None
+            
+            if prev_node == None:
+                self.hosted_head = curr_node.get_next()
+                curr_node.set_next(None)
+                print("\nBooking Removed.\n")
+                return curr_node
+            else:
+                prev_node.set_next(curr_node.get_next())
+                curr_node.set_next(None)
+                print("\nBooking Removed.\n")
+                return curr_node
         
         else:
-            print("\nBooking not found.\n")
+            print("\nInvalid list type specified.\n")
             return
 
     def display_member(self):
@@ -94,7 +115,7 @@ class MemberNode:
         print("\nBorrowed Members\n")
         while curr is not None:
             print("\n")
-            curr.display_head()
+            curr.display()
             print("\n")
             curr = curr.get_next()
 
@@ -102,6 +123,6 @@ class MemberNode:
         print("\nHosting Members\n")
         while curr is not None:
             print("\n")
-            curr.display_head()
+            curr.display()
             print("\n")
             curr = curr.get_next()    
