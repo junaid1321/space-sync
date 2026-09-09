@@ -73,5 +73,51 @@ class WorkspaceManager:
         self.current_day += days
         print(f"Time advanced {days} days. Current day: {self.current_day}")
 
+    def book_space(self, booking_id, borrower_id, host_id, duration_days, amount, percentage_penalty):
+        if borrower_id != host_id:
+            borrower = self.search_member(borrower_id)
+            host = self.search_member(host_id)
+            if borrower is not None and host is not None:
+                if borrower.active == True and host.active == True:
+                    start_day = self.current_day + duration_days
+                    new_bookings = BookingNode(booking_id,amount,borrower_id,host_id,start_day,duration_days,percentage_penalty)
+                    
+                    borrower.add_borrowed_booking(new_bookings)
+                    host.add_hosted_booking(new_bookings)
+                    return
+                else:
+                    print("Make sure both members are active.\n")
+                    return
+            else:
+                print("Error! Members not found!")
+                return
+        else:
+            print("Error! Make sure the host and borrower IDs are unique!")
+            return
 
+    def return_booking(self, booking_id, borrower_id, host_id, current_day):
+        if borrower_id != booking_id and booking_id != host_id and borrower_id != host_id:
+            borrower = self.search_member(borrower_id)
+            host = self.search_member(host_id)
+
+            borrower.remove_booking(booking_id, "borrowed")
+            host.remove_booking(host_id, "hosted")
+            booking = borrower.search_booking(booking_id, "borrowed")
+            if current_day > booking.due_day:
+                 over_fee = booking.calculate_overtime_fee(current_day)
+                 print(f"Overdue Payment Total: {over_fee}")
+                 return
+            else:
+                print(f"Payment Total: {booking.amount}")
+                return
+        else:
+            print("Error! The IDs of the three should be unique!")
+            return
+
+    def display_members(self, member_id):
+        member = self.search_member(member_id)
+        if member is None:
+            return 
+
+        member.display_all_booking()
 
