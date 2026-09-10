@@ -1,4 +1,4 @@
-from bookingNode import BookingNode
+from bookingNode import bookingNode
 
 class MemberNode:
     def __init__(self, member_id, name):
@@ -7,14 +7,14 @@ class MemberNode:
         self.active = True
         self.left = None
         self.right = None
-        self.borrowed_head: BookingNode | None = None
-        self.hosted_head: BookingNode | None = None
+        self.borrowed_head: bookingNode | None = None
+        self.hosted_head: bookingNode | None = None
 
-    def add_borrowed_booking(self, booking: BookingNode):
+    def add_borrowed_booking(self, booking: bookingNode):
         booking.set_next(self.borrowed_head)
         self.borrowed_head = booking
 
-    def add_hosted_booking(self, booking_node: BookingNode):
+    def add_hosted_booking(self, booking_node: bookingNode):
         booking_node.set_next(self.hosted_head)
         self.hosted_head = booking_node
 

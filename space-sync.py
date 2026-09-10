@@ -1,123 +1,68 @@
-from bookingNode import BookingNode
-from MemberNode import memberNode
+from WorkspaceManager import WorkspaceManager
 
-class WorkspaceManager:
-    def __init__(self):
-        self.root = None
-        self.current_day = 1
+wm = WorkspaceManager()
 
-    def insert_member(self, member_id : int, name : str):
-        New_member = memberNode(member_id, name)
-        if self.root == None:
-            self.root = New_member
-            print(f"Member {member_id} is added successfully!")
-            return 
-        
-        current = self.root
-        while True:
-            if member_id < current.member_id:
-                if current.left is None:
-                    current.left = New_member
-                    print(f"Member {member_id} is added successfully!")
-                    return 
-            elif member_id > current.member_id:
-                if current.right is None:
-                    current.right = New_member
-                    print(f"Member {member_id} is added successfully!")
-                    return
-            else:
-                print("ERROR! THE ID OF THE MEMBER MUST BE UNIQUE")
-                return
+while True:
+    print("\n--- WORKSPACE MENU ---")
+    print("1. Add Member")
+    print("2. Search Member")
+    print("3. Display All Members")
+    print("4. Deactivate Member")
+    print("5. Advance Days")
+    print("6. Book Space")
+    print("7. Return Booking")
+    print("8. Display Member Bookings")
+    print("9. Exit")
 
-    def search_member(self, member_id:int) -> memberNode | None:
-        current = self.root
+    choice = input("Enter your choice (1-9): ")
 
-        while current is not None:
-                if member_id < current.member_id:
-                    current = current.left
-                elif member_id > current.member_id:
-                    current = current.right
-                else:
-                    print("Member Found!")
-                    return current
+    try:
+        if choice == "1":
+            m_id = int(input("Enter Member ID: "))
+            name = input("Enter Name: ")
+            wm.insert_member(m_id, name)
 
-        print("Member not found!")
-        print("Enter the correct Member ID")
-        return None
+        elif choice == "2":
+            m_id = int(input("Enter Member ID: "))
+            wm.search_member(m_id)
 
-    def display_all_members(self, current = None, start = True):
-        if start:
-            current = self.root
+        elif choice == "3":
+            wm.display_all_members()
 
-        if current is None:
-            return
+        elif choice == "4":
+            m_id = int(input("Enter Member ID: "))
+            wm.deactivate_member(m_id)
 
-        self.display_all_members(current.left, start = False)
-        current.display_member()
-        self.display_all_members(current.right, start = False)
+        elif choice == "5":
+            days = int(input("Enter days to advance: "))
+            wm.advance_days(days)
 
-    def deactivate_member(self, member_id : int):
-        current = self.search_member(member_id)
-        if current is None:
-            return
+        elif choice == "6":
+            b_id = int(input("Enter Booking ID: "))
+            borrower_id = int(input("Enter Borrower ID: "))
+            host_id = int(input("Enter Host ID: "))
+            duration = int(input("Enter Duration (days): "))
+            amount = float(input("Enter Amount: "))
+            penalty = float(input("Enter Penalty Percentage: "))
+            wm.book_space(b_id, borrower_id, host_id, duration, amount, penalty)
 
-        current.active = False
-        print("Member De-activated Successfully!")
-        return
+        elif choice == "7":
+            b_id = int(input("Enter Booking ID: "))
+            borrower_id = int(input("Enter Borrower ID: "))
+            host_id = int(input("Enter Host ID: "))
+            wm.return_booking(b_id, borrower_id, host_id)
 
-    def advance_days(self, days : int):
-        if days < 0:
-            print("The days to be added cannot be negative.")
-            return
+        elif choice == "8":
+            m_id = int(input("Enter Member ID: "))
+            wm.display_members(m_id)
 
-        self.current_day += days
-        print(f"Time advanced {days} days. Current day: {self.current_day}")
+        elif choice == "9":
+            print("THANKS FOR USING SPACE-SYNC❤️")
+            print("Exiting...")
+            break
 
-    def book_space(self, booking_id, borrower_id, host_id, duration_days, amount, percentage_penalty):
-        if borrower_id != host_id:
-            borrower = self.search_member(borrower_id)
-            host = self.search_member(host_id)
-            if borrower is not None and host is not None:
-                if borrower.active == True and host.active == True:
-                    start_day = self.current_day + duration_days
-                    new_bookings = BookingNode(booking_id,amount,borrower_id,host_id,start_day,duration_days,percentage_penalty)
-                    
-                    borrower.add_borrowed_booking(new_bookings)
-                    host.add_hosted_booking(new_bookings)
-                    return
-                else:
-                    print("Make sure both members are active.\n")
-                    return
-            else:
-                print("Error! Members not found!")
-                return
         else:
-            print("Error! Make sure the host and borrower IDs are unique!")
-            return
-
-    def return_booking(self, booking_id, borrower_id, host_id, current_day):
-        if borrower_id != booking_id and booking_id != host_id and borrower_id != host_id:
-            borrower = self.search_member(borrower_id)
-            host = self.search_member(host_id)
-
-            borrower.remove_booking(booking_id, "borrowed")
-            host.remove_booking(host_id, "hosted")
-            booking = borrower.search_booking(booking_id, "borrowed")
-            if current_day > booking.due_day:
-                 over_fee = booking.calculate_overtime_fee(current_day)
-                 print(f"Overdue Payment Total: {over_fee}")
-                 return
-            else:
-                print(f"Payment Total: {booking.amount}")
-                return
-        else:
-            print("Error! The IDs of the three should be unique!")
-            return
-
-    def display_members(self, member_id):
-        member = self.search_member(member_id)
-        if member is None:
-            return 
-
-        member.display_all_booking()
-
+            print("Invalid choice! Try again.")
+    
+    except ValueError:
+        print("Error! Invalid Input! Please enter a valid numbers where required!")
